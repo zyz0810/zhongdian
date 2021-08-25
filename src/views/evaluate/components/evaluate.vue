@@ -5,71 +5,50 @@
     width="80%"
     @close="close"
     top="10vh"
-    title="详细信息"
+    title="评价结果"
     class="dialogContainer"
+    :append-to-body="true"
     @open="open"
   >
-    <el-descriptions class="margin-top" title="" :column="2" size="medium" border>
-      <el-descriptions-item>
-        <template slot="label">任务号</template>
-        2021206852510332
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">上报时间</template>
-        2021-06-22 10:31:23
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">事件大类</template>
-        容貌
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">事件小类</template>
-       公共设施倾斜
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">事件状态</template>
-        待审核
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">是否紧急事件</template>
-        否
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">事件来源</template>
-        采集员采集
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">采集员</template>
-        采集员1
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">采集员手机号</template>
-        18963245623
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">所属部门</template>
-        采集公司
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">位置</template>
-        湖州市德清县5525号
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">问题描述</template>
-        湖州市德清县隔离墩倾斜
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">问题图片</template>
-        湖州市德清县隔离墩倾斜
-      </el-descriptions-item>
-    </el-descriptions>
+    <p class="baseColor border_bt f16 form_title mb_10">进度完成情况</p>
+    <el-form ref="dataForm" :inline="true" :model="temp" label-width="110px">
+      <el-form-item label="考核周期：" prop="name">打算一提</el-form-item>
+      <el-form-item label="完成情况说明：" prop="name">局重点项目</el-form-item>
+    </el-form>
+    <el-form ref="dataForm" :model="temp" label-width="110px">
+      <el-form-item label="相关材料：" prop="name">
+        <div class="text-center w_100_px inlineBlock mr_10">
+          <i class="el-icon-video-camera-solid f50 baseColor"></i>
+          <p>78787845dfadfasdf asf </p>
+        </div>
+        <div class="text-center w_100_px inlineBlock mr_10">
+          <i class="el-icon-video-camera-solid f50 baseColor"></i>
+          <p>78787845dfadfasdf asf </p>
+        </div>
+      </el-form-item>
+    </el-form>
+    <p class="baseColor border_bt f16 form_title mb_10">项目评价</p>
+    <el-form ref="dataForm" :model="temp" label-width="135px" class="mb_20">
+      <el-form-item label="完成进度评价：" prop="name">
+        <el-radio-group v-model="temp.radio">
+          <el-radio :label="3">优秀</el-radio>
+          <el-radio :label="6">良好</el-radio>
+          <el-radio :label="9">合格</el-radio>
+          <el-radio :label="9">差</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="评分：" prop="name">
+        <el-input v-model.trim="temp.name" placeholder="" clearable class="w_200"></el-input> 分
+      </el-form-item>
+      <el-form-item label="说明：" prop="name">
+        <el-input type="textarea" v-model.trim="temp.name" placeholder="" clearable></el-input>
+      </el-form-item>
+    </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="showViewDialog = false">取 消</el-button>
-      <el-button type="warning" @click="showAbandonedDialog = true" :loading="paraLoading">废 弃</el-button>
-      <el-button type="primary" @click="showAdoptDialog = true" :loading="paraLoading">通 过</el-button>
+      <el-button type="primary" @click="" :loading="paraLoading">保 存</el-button>
     </div>
-    <adoptView :showDialog.sync="showAdoptDialog" :paraData="paraData"></adoptView>
-    <abandonedView :showDialog.sync="showAbandonedDialog" :paraData="paraData"></abandonedView>
+
   </myDialog>
 </template>
 
@@ -77,20 +56,12 @@
   import map from '@/components/Map/map' // 引入刚才的map.js 注意路径
   import {paraValueList,paraValueSave,paraValueUpdate,paraValueDelete} from '@/api/parameter'
   import draggable from 'vuedraggable'
-  import waves from '@/directive/waves'
-  import Pagination from "@/components/Pagination/index"; // waves directive
-  import SingleImage from "@/components/Upload/SingleImage.vue"; // waves directive
-  import adoptView from "./adopt"; // waves directive
-  import abandonedView from "./abandoned"; // waves directive
+  import Pagination from "@/components/Pagination/index";
   export default {
     name: 'parameterView',
-    directives: { waves },
     components: {
       draggable,
       Pagination,
-      SingleImage,
-      adoptView,
-      abandonedView
     },
     props: {
       showDialog: {
@@ -110,6 +81,38 @@
     },
     data() {
       return {
+        listLoading:false,
+        list: [{
+          num:'一月',
+          com:'文一路300号',
+          data:1,
+          result:1
+        },{
+          num:'二月',
+          com:'文一路300号',
+          data:1,
+          result:1
+        },{
+          num:'三月',
+          com:'文一路300号',
+          data:1,
+          result:1
+        },{
+          num:'四月',
+          com:'文一路300号',
+          data:1,
+          result:1
+        },{
+          num:'五月',
+          com:'文一路300号',
+          data:1,
+          result:1
+        },{
+          num:'六月',
+          com:'文一路300号',
+          data:1,
+          result:2
+        }],
         showAdoptDialog:false,
         showAbandonedDialog:false,
         map: '', // 对象
@@ -213,7 +216,7 @@
               if(res.resp_code == 0) {
                 this.getList();
                 // this.list.unshift(res.data);
-               this.showViewDialog = false;
+                this.showViewDialog = false;
                 // debugger
                 this.getList();
                 this.$message({

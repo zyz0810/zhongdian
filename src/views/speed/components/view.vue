@@ -2,47 +2,50 @@
   <myDialog
     :visible.sync="showViewDialog"
     :close-on-click-modal="false"
-    width="50%"
+    width="80%"
     @close="close"
     top="10vh"
-    title="通过"
+    title="进度更新"
     class="dialogContainer"
-    :append-to-body="true"
     @open="open"
   >
-
-    <el-form ref="dataForm" :rules="rules" :model="temp" label-width="120px" class="mt_20">
-      <el-form-item label="大类" prop="name">
-        <el-input v-model.trim="temp.name" placeholder="请输入规格值" autocomplete="off" clearable/>
+    <p class="baseColor border_bt f16 form_title mb_10">项目信息</p>
+    <el-form ref="dataForm" :inline="true" :model="temp" label-width="105px">
+      <el-form-item label="项目名称：" prop="name">打算一提</el-form-item>
+      <el-form-item label="任务类别：" prop="name">局重点项目</el-form-item>
+      <el-form-item label="责任科室：" prop="name">受理中心</el-form-item>
+      <el-form-item label="分管领导：" prop="name">郑思明</el-form-item>
+    </el-form>
+    <el-form ref="dataForm" :model="temp" label-width="105px">
+      <el-form-item label="项目期限：" prop="name">2021年1月-2021年12月</el-form-item>
+      <el-form-item label="计划进度：" prop="name">受理中心受理中心受理中心受理中心受理中心受理中心受理中心受理中心受理中心</el-form-item>
+    </el-form>
+    <p class="baseColor border_bt f16 form_title mb_10">项目实际进度</p>
+    <el-form ref="dataForm" :model="temp" label-width="135px" class="mb_20">
+      <el-form-item label="选择进度时间：" prop="name">
+        <el-date-picker
+          v-model="temp.name"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期">
+        </el-date-picker>
       </el-form-item>
-      <el-form-item label="小类" prop="name">
-        <el-input v-model.trim="temp.name" placeholder="请输入规格值" autocomplete="off" clearable/>
-      </el-form-item>
-      <el-form-item label="所属区块" prop="name">
-        <el-input v-model.trim="temp.name" placeholder="请输入规格值" autocomplete="off" clearable/>
-      </el-form-item>
-      <el-form-item label="协办部门" prop="name">
-        <el-input v-model.trim="temp.name" placeholder="请输入规格值" autocomplete="off" clearable/>
-      </el-form-item>
-      <el-form-item label="处理时限" prop="name">4小时</el-form-item>
-      <el-form-item label="说明" prop="name">
-        <el-select v-model="temp.status">
-          <el-option label="这是一条惯用语" value="1"></el-option>
-          <el-option label="测试" value="0"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="是否为紧急案卷" prop="name">
+      <el-form-item label="进度完成情况：" prop="name">
         <el-radio-group v-model="temp.radio">
-          <el-radio :label="3">是</el-radio>
-          <el-radio :label="6">否</el-radio>
+          <el-radio :label="3">正常</el-radio>
+          <el-radio :label="6">超前</el-radio>
+          <el-radio :label="9">延迟</el-radio>
         </el-radio-group>
+      </el-form-item>
+      <el-form-item label="进度完成说明：" prop="name">
+        <el-input type="textarea" v-model.trim="temp.name" placeholder="" clearable></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="showViewDialog = false">取 消</el-button>
-      <el-button type="primary" @click="createData()" :loading="paraLoading">派 遣</el-button>
+      <el-button type="primary" @click="" :loading="paraLoading">提 交</el-button>
     </div>
-
 
   </myDialog>
 </template>
@@ -54,13 +57,16 @@
   import waves from '@/directive/waves'
   import Pagination from "@/components/Pagination/index"; // waves directive
   import SingleImage from "@/components/Upload/SingleImage.vue"; // waves directive
+
+
   export default {
     name: 'parameterView',
     directives: { waves },
     components: {
       draggable,
       Pagination,
-      SingleImage
+      SingleImage,
+
     },
     props: {
       showDialog: {
@@ -80,6 +86,8 @@
     },
     data() {
       return {
+        showAdoptDialog:false,
+        showAbandonedDialog:false,
         map: '', // 对象
         zoom: 12, // 地图的初始化级别，及放大比例
         centerLatitude:'30.20835',//中心纬度

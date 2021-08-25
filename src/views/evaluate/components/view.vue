@@ -2,65 +2,62 @@
   <myDialog
     :visible.sync="showViewDialog"
     :close-on-click-modal="false"
-    width="50%"
+    width="80%"
     @close="close"
     top="10vh"
-    title="通过"
+    title="项目考核评价"
     class="dialogContainer"
-    :append-to-body="true"
     @open="open"
   >
-
-    <el-form ref="dataForm" :rules="rules" :model="temp" label-width="120px" class="mt_20">
-      <el-form-item label="大类" prop="name">
-        <el-input v-model.trim="temp.name" placeholder="请输入规格值" autocomplete="off" clearable/>
-      </el-form-item>
-      <el-form-item label="小类" prop="name">
-        <el-input v-model.trim="temp.name" placeholder="请输入规格值" autocomplete="off" clearable/>
-      </el-form-item>
-      <el-form-item label="所属区块" prop="name">
-        <el-input v-model.trim="temp.name" placeholder="请输入规格值" autocomplete="off" clearable/>
-      </el-form-item>
-      <el-form-item label="协办部门" prop="name">
-        <el-input v-model.trim="temp.name" placeholder="请输入规格值" autocomplete="off" clearable/>
-      </el-form-item>
-      <el-form-item label="处理时限" prop="name">4小时</el-form-item>
-      <el-form-item label="说明" prop="name">
-        <el-select v-model="temp.status">
-          <el-option label="这是一条惯用语" value="1"></el-option>
-          <el-option label="测试" value="0"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="是否为紧急案卷" prop="name">
-        <el-radio-group v-model="temp.radio">
-          <el-radio :label="3">是</el-radio>
-          <el-radio :label="6">否</el-radio>
-        </el-radio-group>
-      </el-form-item>
+    <p class="baseColor border_bt f16 form_title mb_10">问题信息</p>
+    <el-form ref="dataForm" :inline="true" :model="temp" label-width="105px">
+      <el-form-item label="项目名称：" prop="name">打算一提</el-form-item>
+      <el-form-item label="任务类别：" prop="name">局重点项目</el-form-item>
+      <el-form-item label="责任科室：" prop="name">受理中心</el-form-item>
+      <el-form-item label="分管领导：" prop="name">郑思明</el-form-item>
     </el-form>
+    <el-form ref="dataForm" :model="temp" label-width="105px">
+      <el-form-item label="项目期限：" prop="name">2021年1月-2021年12月</el-form-item>
+      <el-form-item label="计划进度：" prop="name">受理中心受理中心受理中心受理中心受理中心受理中心受理中心受理中心受理中心</el-form-item>
+    </el-form>
+    <p class="baseColor border_bt f16 form_title mb_10">项目进度</p>
+    <el-table v-loading="listLoading" :data="list" :height="tableHeight" border :header-cell-style="{background:'rgb(244,244,252)',}"
+              element-loading-text="拼命加载中" fit ref="tableList" class="dialog_table">
+      <el-table-column label="月份" align="center" prop="num"></el-table-column>
+      <el-table-column label="计划完成情况" align="center" prop="com"></el-table-column>
+      <el-table-column label="相关资料" align="center" prop="data">
+        <template slot-scope="scope">
+          <el-link type="primary" href="#">{{scope.row.data}}</el-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="评价结果" align="center" prop="result" width="150">
+        <template slot-scope="scope">
+          <span v-if="scope.row.result == 1">完成情况良好<i class="el-icon-edit-outline f20 baseColor bold ml_10" @click="handleEvaluate(scope.row)"></i></span>
+          <span v-if="scope.row.result != 1"><el-button type="text" @click="handleEvaluate(scope.row)">请评价</el-button></span>
+        </template>
+      </el-table-column>
+
+    </el-table>
     <div slot="footer" class="dialog-footer">
       <el-button @click="showViewDialog = false">取 消</el-button>
-      <el-button type="primary" @click="createData()" :loading="paraLoading">派 遣</el-button>
+      <el-button type="primary" @click="" :loading="paraLoading">保 存</el-button>
     </div>
-
-
+    <evaluateView :showDialog.sync="showEvaluateDialog" :paraData="evaluateData"></evaluateView>
   </myDialog>
 </template>
 
 <script>
   import map from '@/components/Map/map' // 引入刚才的map.js 注意路径
+  import evaluateView from "./evaluate";
   import {paraValueList,paraValueSave,paraValueUpdate,paraValueDelete} from '@/api/parameter'
   import draggable from 'vuedraggable'
-  import waves from '@/directive/waves'
-  import Pagination from "@/components/Pagination/index"; // waves directive
-  import SingleImage from "@/components/Upload/SingleImage.vue"; // waves directive
+  import Pagination from "@/components/Pagination/index";
   export default {
     name: 'parameterView',
-    directives: { waves },
     components: {
       draggable,
       Pagination,
-      SingleImage
+      evaluateView
     },
     props: {
       showDialog: {
@@ -80,6 +77,42 @@
     },
     data() {
       return {
+        showEvaluateDialog:false,
+        evaluateData:{},
+        listLoading:false,
+        list: [{
+          num:'一月',
+          com:'文一路300号',
+          data:1,
+          result:1
+        },{
+          num:'二月',
+          com:'文一路300号',
+          data:1,
+          result:1
+        },{
+          num:'三月',
+          com:'文一路300号',
+          data:1,
+          result:1
+        },{
+          num:'四月',
+          com:'文一路300号',
+          data:1,
+          result:1
+        },{
+          num:'五月',
+          com:'文一路300号',
+          data:1,
+          result:1
+        },{
+          num:'六月',
+          com:'文一路300号',
+          data:1,
+          result:2
+        }],
+        showAdoptDialog:false,
+        showAbandonedDialog:false,
         map: '', // 对象
         zoom: 12, // 地图的初始化级别，及放大比例
         centerLatitude:'30.20835',//中心纬度
@@ -112,6 +145,12 @@
       }
     },
     methods: {
+      handleEvaluate(){
+        this.showEvaluateDialog = true
+        this.evaluateData = {
+          // id:row.id
+        }
+      },
       onLoad() {
         let T = window.T;
         let map = new T.Map('mapDiv');
@@ -181,7 +220,7 @@
               if(res.resp_code == 0) {
                 this.getList();
                 // this.list.unshift(res.data);
-               this.showViewDialog = false;
+                this.showViewDialog = false;
                 // debugger
                 this.getList();
                 this.$message({

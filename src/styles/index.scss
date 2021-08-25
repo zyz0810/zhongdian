@@ -488,6 +488,9 @@ img {
   margin-right: 10px;
 }
 
+.mr_30 {
+  margin-right: 30px;
+}
 .mb_10 {
   margin-bottom: 10px;
 }
@@ -668,9 +671,16 @@ input[type="number"] {
 }
 
 .border_bt {
-  border-bottom: 2px solid $baseColor;
+  border-bottom: 2px solid #f2f2f2;
 }
-
+.form_title{
+  padding: 0 20px;
+  line-height: 2;
+}
+.dialog_table{
+  width: 96%;
+  margin: 0 auto;
+}
 //修改表单内组件宽度
 
 .formList {
@@ -763,6 +773,7 @@ input[type="number"] {
 
 .el-dialog__body{
   overflow: auto;
+  padding: 30px 0 !important;
 }
 
 // 表格单选
@@ -1048,4 +1059,28 @@ input[type="number"] {
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   cursor:pointer;
+}
+.step_tag{
+  //min-width: 20px;
+  padding: 0 10px;
+  height: 20px;
+  line-height: 20px;
+  border: 1px solid #ccc;
+  float: left;
+  &.bg_blue{
+    color: #fff;
+    background: rgb(14,115,229);
+  }
+  &.bg_green{
+    color: #fff;
+    background: green;
+  }
+  &.bg_red{
+    color: #fff;
+    background: red;
+  }
+  &.bg_gray{
+    color: #ccc;
+    background: #f2f2f2;
+  }
 }

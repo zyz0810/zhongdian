@@ -1,53 +1,71 @@
 <template>
   <div class="app-container">
-
     <div class="p20 bg_white">
+      <el-form :inline="true"
+               :model="listQuery"
+               class="">
+        <el-form-item label="项目"
+                      prop="brandId">
+          <el-select v-model.trim="listQuery.brandId"
+                     filterable
+                     clearable
+                     placeholder="请选择项目">
+            <el-option v-for="item in projectOption"
+                       :key="item.id"
+                       :label="item.name"
+                       :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="责任科室"
+                      prop="brandId">
+          <el-select v-model.trim="listQuery.brandId"
+                     filterable
+                     clearable
+                     placeholder="请选择责任科室">
+            <el-option v-for="item in projectOption"
+                       :key="item.id"
+                       :label="item.name"
+                       :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button v-waves
+                     class="filter-item"
+                     type="primary"
+                     icon="el-icon-search"
+                     @click="">查询</el-button>
+        </el-form-item>
+      </el-form>
       <div class="mb_10">
-        <el-button class="btn_blue02" type="primary"  @click="">导出</el-button>
+        <el-checkbox-group v-model="checkList" class="fl" style="line-height: 32px;">
+          <el-checkbox :label="0">进度按时提交</el-checkbox>
+          <el-checkbox :label="1">进度未提交</el-checkbox>
+          <el-checkbox :label="2">时间未到</el-checkbox>
+        </el-checkbox-group>
+        <!--        <el-button type="primary" @click="handleView">添加项目</el-button>-->
         <el-form :inline="true" :model="listQuery" :label="280" class="fr">
           <el-form-item label="">
             <el-input v-model="listQuery.productSn" placeholder="" @change="handleFilter" clearable/>
           </el-form-item>
           <el-form-item>
-            <el-button class="btn_blue02" type="primary" @click="handleFilter">搜索</el-button>
+            <el-button class="btn_blue02" type="primary" @click="handleFilter">导出</el-button>
           </el-form-item>
         </el-form>
       </div>
-      <el-table v-loading="listLoading" :data="list" :height="tableHeight" border :header-cell-style="{background:'rgb(163,192,237)',}"
-                :row-class-name="tableRowClassName"
+      <el-table v-loading="listLoading" :data="list" :height="tableHeight" border :header-cell-style="{background:'rgb(244,244,252)',}"
                 element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
-        <el-table-column label="" align="center" prop="name">
-          <template slot-scope="scope">
-            <span :class="['inlineBlock',scope.row.type == 0?'red_circle':'']"></span>
-          </template>
-        </el-table-column>
         <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
-        <el-table-column label="案件编号" align="center" prop="num"></el-table-column>
-        <el-table-column label="任务号" align="center" prop="name">
+        <el-table-column label="重点工作项目" align="center" prop="num"></el-table-column>
+        <el-table-column label="责任科室" align="center" prop="time"></el-table-column>
+        <el-table-column label="计划进度" align="center" prop="name"></el-table-column>
+        <el-table-column label="6月进度更新" align="center" prop="name"></el-table-column>
+        <el-table-column label="考核评价状态" align="center" prop="name"></el-table-column>
+        <el-table-column label="操作" align="center" prop="name" width="100">
           <template slot-scope="scope">
-            <span>{{scope.row.type | filtersType}}</span>
+            <el-button type="text" @click="handleView(scope.row)">考核评价</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="事件来源" align="center" prop="num"></el-table-column>
-        <el-table-column label="大类" align="center" prop="source">
-          <template slot-scope="scope">
-            <span>{{scope.row.source | filtersSource}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="小类" align="center" prop="name"></el-table-column>
-        <el-table-column label="截至时间" align="center" prop="">
-          <template slot-scope="scope">
-            <span>{{scope.row.status | filtersStatus}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="剩余时间" align="center" prop="name"></el-table-column>
-        <el-table-column label="处置部门" align="center" prop="name"></el-table-column>
-        <el-table-column label="紧急案卷" align="center" prop="name"></el-table-column>
-        <el-table-column label="问题描述" align="center" prop="time">
-          <template slot-scope="scope">
-            <span @click="handleView(scope.row)">{{scope.row.status}}</span>
-          </template>
-        </el-table-column>
+
       </el-table>
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
                   @pagination="getList" class="text-right"/>
@@ -75,6 +93,14 @@
     },
     data() {
       return {
+        checkList:[0],
+        projectOption:[{
+          id:1,
+          name:'项目1',
+        },{
+          id:2,
+          name:'项目2',
+        }],
         showViewDialog:false,
         paraData:{
           id:''
@@ -281,12 +307,7 @@
       // this.getList();
     },
     methods: {
-      tableRowClassName({row, rowIndex}){
-        if (row.type == 0) {
-          return 'red01';
-        }
-        return '';
-      },
+
       handleFilter() {
         this.listQuery.page = 1;
         this.getList()
@@ -342,20 +363,4 @@
     }
   }
 </script>
-<style lang="scss" scoped>
-  .monitor_num{
-    line-height: 2.5;
-  }
-  .red_circle{
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: red;
-  }
-  .yellow_circle{
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: yellow;
-  }
-</style>
+

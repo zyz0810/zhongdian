@@ -377,27 +377,4 @@
     }
   }
 </script>
-<style lang="scss">
-  .step_tag{
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
-    border: 1px solid #ccc;
-    &.bg_blue{
-      color: #fff;
-      background: rgb(14,115,229);
-    }
-    &.bg_green{
-      color: #fff;
-      background: green;
-    }
-    &.bg_red{
-      color: #fff;
-      background: red;
-    }
-    &.bg_gray{
-      color: #ccc;
-      background: #f2f2f2;
-    }
-  }
-</style>
+

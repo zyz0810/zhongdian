@@ -88,7 +88,7 @@ export const asyncRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/register/list',
+    redirect: '/manage/list',
     // name: '实时监测',
     meta: {
       // title: '实时监测',
@@ -97,9 +97,9 @@ export const asyncRoutes = [
     },
     children: [
       {
-        path: 'register/list',
-        component: () => import('@/views/register/list'),
-        name: 'modelList',
+        path: 'project/list',
+        component: () => import('@/views/project/list'),
+        name: 'projectList',
         meta: {
           title: '项目管理',
           roles: ['admin'],
@@ -108,7 +108,7 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/examine',
+    path: '/speed',
     component: Layout,
     redirect: 'noRedirect',
     // name: '示范小区',
@@ -122,8 +122,8 @@ export const asyncRoutes = [
     children: [
       {
         path: 'list',
-        component: () => import('@/views/examine/list'),
-        name: 'examineList',
+        component: () => import('@/views/speed/list'),
+        name: 'speedList',
         meta: {
           title: '进度管理',
           roles: [
@@ -134,7 +134,7 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/dispatch',
+    path: '/evaluate',
     component: Layout,
     redirect: 'noRedirect',
     // name: '示范小区',
@@ -148,8 +148,8 @@ export const asyncRoutes = [
     children: [
       {
         path: 'list',
-        component: () => import('@/views/dispatch/list'),
-        name: 'dispatchList',
+        component: () => import('@/views/evaluate/list'),
+        name: 'evaluateList',
         meta: {
           title: '考核评价',
           roles: [
@@ -160,7 +160,7 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/assist',
+    path: '/display',
     component: Layout,
     redirect: 'noRedirect',
     // name: '示范小区',
@@ -173,9 +173,9 @@ export const asyncRoutes = [
     },
     children: [
       {
-        path: 'verify',
-        component: () => import('@/views/assist/list'),
-        name: 'verifyList',
+        path: 'list',
+        component: () => import('@/views/display/list'),
+        name: 'displayList',
         meta: {
           title: '重点工作展示板',
           roles: [

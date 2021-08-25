@@ -12,7 +12,7 @@
 <!--  </div>-->
   <el-header>
     <el-row class="flex flex-vertical">
-      <el-col :span="10" class="f26 txt_linear bold">滨江区城市管理局指挥一体化平台</el-col>
+      <el-col :span="10" class="f26 txt_linear bold">滨江区城市管理局重点工作</el-col>
       <el-col :span="14" class="top_right">
         <div class="right-menu">
           <!--<template v-if="device!=='mobile'">-->
