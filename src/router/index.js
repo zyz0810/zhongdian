@@ -88,7 +88,7 @@ export const asyncRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/manage/list',
+    redirect: '/project/list',
     // name: '实时监测',
     meta: {
       // title: '实时监测',
@@ -190,7 +190,7 @@ export const asyncRoutes = [
 const createRouter = () =>
   new Router({
     base:'keynote',
-    mode: 'history', // require service support
+    // mode: 'history', // require service support
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes
   })

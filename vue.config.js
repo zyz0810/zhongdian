@@ -41,9 +41,9 @@ module.exports = {
       '/api':{
         target:'http://yy.susongzhijia.com',
         changeOrigin: true,
-        pathRewrite:{
-          '^/api':'/api'
-        }
+        // pathRewrite:{
+        //   '/keynote/api':''
+        // }
       }
     }
     // proxy:"http://139.224.233.152:18000",
