@@ -58,8 +58,8 @@
         <el-table-column label="重点工作项目" align="center" prop="num"></el-table-column>
         <el-table-column label="责任科室" align="center" prop="time"></el-table-column>
         <el-table-column label="计划进度" align="center" prop="name"></el-table-column>
-        <el-table-column label="6月进度更新" align="center" prop="name"></el-table-column>
-        <el-table-column label="考核评价状态" align="center" prop="name"></el-table-column>
+<!--        <el-table-column label="6月进度更新" align="center" prop="name"></el-table-column>-->
+<!--        <el-table-column label="考核评价状态" align="center" prop="name"></el-table-column>-->
         <el-table-column label="操作" align="center" prop="name" width="100">
           <template slot-scope="scope">
             <el-button type="text" @click="handleView(scope.row)">考核评价</el-button>

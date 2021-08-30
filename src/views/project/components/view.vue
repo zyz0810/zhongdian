@@ -61,7 +61,7 @@
 
 <script>
   import map from '@/components/Map/map' // 引入刚才的map.js 注意路径
-  import {paraValueList,paraValueSave,paraValueUpdate,paraValueDelete} from '@/api/parameter'
+  import {itemsDetail,progressList} from '@/api/project'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import Pagination from "@/components/Pagination/index"; // waves directive

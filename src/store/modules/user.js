@@ -55,12 +55,12 @@ const actions = {
         // token_type  access_token
         commit('SET_TOKEN', data.access_token);
         // commit('SET_ID', response.data.id);
-        console.log(response.data.city_list);
-        commit('SET_CITY', response.data.city_list);
-        commit('SET_CITYSELECTED', response.data.city_list[0].id);
+        // console.log(response.data.city_list);
+        // commit('SET_CITY', response.data.city_list);
+        // commit('SET_CITYSELECTED', response.data.city_list[0].id);
 
-        setCity(response.data.city_list);
-        setCitySelected(response.data.city_list[0].id);
+        // setCity(response.data.city_list);
+        // setCitySelected(response.data.city_list[0].id);
         // setId(response.data.id);
         // setName(response.data.name);
         setToken(data.access_token);
