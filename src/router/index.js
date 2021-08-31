@@ -114,7 +114,7 @@ export const asyncRoutes = [
     // name: '示范小区',
     meta: {
       // title: '示范小区',
-      icon: 'iconfont icon-xingxing',
+      icon: 'el-icon-s-order',
       roles: [
         'admin',
       ]
@@ -166,7 +166,7 @@ export const asyncRoutes = [
     // name: '示范小区',
     meta: {
       // title: '示范小区',
-      icon: 'iconfont icon-xingxing',
+      icon: 'el-icon-s-opportunity',
       roles: [
         'admin',
       ]

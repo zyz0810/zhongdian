@@ -18,12 +18,31 @@
     </el-form>
     <el-form  :model="temp" label-width="105px">
       <el-form-item label="项目期限：" prop="name">{{projectInfo.end_time}}</el-form-item>
-      <el-form-item label="计划进度：" prop="name">{{projectInfo.items_name}}</el-form-item>
+      <el-form-item label="计划进度：" prop="name">{{projectInfo.progressLine}}</el-form-item>
     </el-form>
     <p class="baseColor border_bt f16 form_title mb_10">项目实际进度</p>
-    <el-form ref="dataForm" :rule="rules" :model="temp" label-width="135px" class="mb_20">
-      <el-form-item label="上传文件：" prop="name">
-        <SingleImage></SingleImage>
+    <el-form ref="dataForm" :rules="rules" :model="temp" label-width="135px" class="mb_20">
+      <el-form-item label="上传文件：" prop="url">
+        <el-upload
+                class="upload-demo"
+                ref="upload"
+                action
+                :multiple="false"
+                name="files"
+                accept=".pdf,.PDF"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :file-list="fileList"
+                v-loading="loading"
+                :limit="1"
+                :http-request="uploadFile"
+        >
+          <!--:disabled="protocolRebate.protocolFileUrl != ''"  protocolFileName -->
+          <el-button slot="trigger" type="primary">选取文件</el-button>
+          <div slot="tip" class="el-upload__tip">
+            支持文件格式：pdf格式且单个文件不能超过2M
+          </div>
+        </el-upload>
       </el-form-item>
       <el-form-item label="选择进度时间：" prop="id">
         <el-select v-model.trim="temp.id"
@@ -56,15 +75,15 @@
 </template>
 
 <script>
-  import {itemsDetail, progressList} from '@/api/project'
+  import {itemsDetail, progressList,editProgress} from '@/api/project'
   import draggable from 'vuedraggable'
-  import SingleImage from "@/components/Upload/SingleImage.vue";
-
+  import SingleImageTwo from "@/components/Upload/SingleImage2";
+  import { uploadImg } from "@/api/upload";
   export default {
     name: 'speedView',
     components: {
       draggable,
-      SingleImage,
+      SingleImageTwo,
     },
     props: {
       showDialog: {
@@ -84,17 +103,20 @@
     },
     data() {
       return {
+        loading:false,
+        fileList:[],
         projectTimeOption:[],
         paraLoading:false,
         temp: {
           id:'',
-          status:'',	//1、正常 2 超前 3延迟
+          status:1,	//1、正常 2 超前 3延迟
           progress_info:'',
           url:''
         },
         projectInfo:{},
         rules: {
-          name: [{ required: true, message: '请输入名称', trigger: 'change' }],
+          id: [{ required: true, message: '请选择项目', trigger: 'change' }],
+          status: [{ required: true, message: '请选择完成情况', trigger: 'change' }],
         },
       }
     },
@@ -109,7 +131,50 @@
       },
     },
     methods: {
-
+      // 图片上传
+      uploadFile(e) {
+        const file = e.file;
+        if (file.type != "application/pdf") {
+          this.$message({ message: "附件仅支持PDF格式", type: "warning" });
+          this.fileList = [];
+          return;
+        }
+        if (!(file.size / 1024 / 1024 / 2 <= 1)) {
+          this.$message({
+            message: "上传文件大小不能超过 2MB!",
+            type: "warning",
+          });
+          this.fileList = [];
+          return;
+        }
+        this.loading = true;
+        uploadImg(file)
+                .then((res) => {
+                  // this.protocolRebate.protocolFileUrl = res.picUrl;
+                  // this.protocolRebate.protocolFileName = file.name;
+                  this.fileList = [{ url: res.picUrl, name: file.name }];
+                  this.loading = false;
+                  this.$message({ message: "上传成功", type: "success" });
+                  // 上传文件失去焦点
+                  this.$refs.firstForm.validate((valid) => {
+                    if (valid) {
+                      // this.current = 1;
+                    }
+                  });
+                })
+                .catch((e) => {
+                  this.loading = false;
+                  this.$message({ message: "上传附件失败", type: "warning" });
+                });
+      },
+      handlePreview(file) {
+        console.log(file);
+      },
+      // 文件删除
+      handleRemove(file, fileList) {
+        // console.log(file, fileList);
+        this.temp.url = "";
+      },
       hasImgSrc(val) {
         this.temp.imgUrl = val;
       },
@@ -131,7 +196,19 @@
           this.getProjectTime();
         })
       },
-      close(){},
+      close(){
+        this.loading=false;
+        this.fileList=[];
+        this.projectTimeOption=[];
+        this.paraLoading=false;
+        this.temp= {
+          id:'',
+          status:1,	//1、正常 2 超前 3延迟
+          progress_info:'',
+          url:''
+        };
+        this.projectInfo={};
+      },
       onsubmit() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
@@ -141,14 +218,13 @@
               setTimeout(()=>{
                 this.paraLoading = false
               },1000)
-              if(res.resp_code == 0) {
-                this.getList();
+              if(res.code == 1) {
                 // this.list.unshift(res.data);
                this.showViewDialog = false;
                 // debugger
-                this.getList();
+                this.$emit('updateList');
                 this.$message({
-                  message: '增加成功',
+                  message: res.message,
                   type: 'success'
                 });
               }

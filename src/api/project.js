@@ -83,7 +83,10 @@ export function editProgress(data) {
   })
 }
 /* 更新考核评价
- * id 项目ID
+ * progress_id 	进度ID
+ * status 	1、优秀 2、良好 、3合格 4、差
+ * remark 	说明
+ * grade 分数
  */
 export function editCheck(data) {
   return request({

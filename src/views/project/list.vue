@@ -4,9 +4,9 @@
       <div class="mb_10">
         <el-button type="primary" @click="handleView">添加项目</el-button>
         <el-form :inline="true" :model="listQuery" :label="280" class="fr">
-          <el-form-item label="">
-            <el-input v-model="listQuery.productSn" placeholder="" @change="handleFilter" clearable/>
-          </el-form-item>
+<!--          <el-form-item label="">-->
+<!--            <el-input v-model="listQuery.productSn" placeholder="" @change="handleFilter" clearable/>-->
+<!--          </el-form-item>-->
           <el-form-item>
             <el-button class="btn_blue02" type="primary" @click="handleFilter">导出</el-button>
           </el-form-item>
@@ -24,11 +24,11 @@
         <el-table-column label="分管领导" align="center" prop="leader_name"></el-table-column>
         <el-table-column label="备注" align="center" prop="remark"></el-table-column>
       </el-table>
-      <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
+      <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize"
                   @pagination="getList" class="text-right"/>
     </div>
 
-    <paraView :showDialog.sync="showViewDialog" :paraData="paraData"></paraView>
+    <paraView :showDialog.sync="showViewDialog" :paraData="paraData" @updateList="getList"></paraView>
 
   </div>
 </template>
@@ -60,7 +60,7 @@
         listLoading: false,
         listQuery: {
           page: 1,
-          limit: 10
+          pageSize: 10
         },
         tableHeight:'100'
       }
@@ -122,7 +122,7 @@
       resetList() {
         this.listQuery = {
           page: 1,
-          limit: 10
+          pageSize: 10
         }
         this.getList();
       },

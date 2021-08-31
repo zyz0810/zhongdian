@@ -9,44 +9,48 @@
     class="dialogContainer"
     @open="open"
   >
-    <el-form ref="dataForm" :rules="rules" :inline="true" :model="temp" label-width="120px" class="mt_20">
-      <el-form-item label="项目名称" prop="name">
-        <el-input v-model.trim="temp.name" placeholder="请输入项目名称" autocomplete="off" clearable/>
+    <el-form ref="firstForm" :rules="rules" :inline="true" :model="temp" label-width="120px" class="mt_20">
+      <el-form-item label="项目名称" prop="items_name">
+        <el-input v-model.trim="temp.items_name" placeholder="请输入项目名称" autocomplete="off" clearable/>
       </el-form-item>
-      <el-form-item label="任务类别" prop="name">
-        <el-select v-model="temp.status">
+      <el-form-item label="任务类别" prop="type">
+        <el-select v-model="temp.type">
           <el-option label="启用" value="1"></el-option>
           <el-option label="禁用" value="0"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="责任科室" prop="name">
-        <el-select v-model="temp.status">
-          <el-option label="启用" value="1"></el-option>
-          <el-option label="禁用" value="0"></el-option>
+      <el-form-item label="责任科室" prop="offices">
+        <el-select v-model="temp.offices">
+          <el-option v-for="item in officesOption"
+                     :key="item.id"
+                     :label="item.name"
+                     :value="item.id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="分管领导" prop="name">
-        <el-select v-model="temp.status">
-          <el-option label="启用" value="1"></el-option>
-          <el-option label="禁用" value="0"></el-option>
+      <el-form-item label="分管领导" prop="leader">
+        <el-select v-model="temp.leader">
+          <el-option v-for="item in userOption"
+                     :key="item.id"
+                     :label="item.user_name"
+                     :value="item.id"></el-option>
         </el-select>
       </el-form-item>
     </el-form>
     <el-form ref="dataForm" :rules="rules" :model="temp" label-width="120px" class="mb_20">
-      <el-form-item label="项目期限" prop="name">
+      <el-form-item label="项目期限" prop="start_time">
         <el-date-picker
-          v-model="temp.name"
+          v-model="dateTime"
           type="daterange"
           range-separator="至"
           start-placeholder="开始日期"
           end-placeholder="结束日期">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="完成目标" prop="name">
-        <el-input type="textarea" v-model.trim="temp.name" placeholder="故障详情……500字以内" clearable></el-input>
+      <el-form-item label="完成目标" prop="target">
+        <el-input type="textarea" v-model.trim="temp.target" placeholder="请输入完成目标" clearable></el-input>
       </el-form-item>
-      <el-form-item label="备注" prop="name">
-        <el-input type="textarea" v-model.trim="temp.name" placeholder="故障详情……500字以内" clearable></el-input>
+      <el-form-item label="备注" prop="remark">
+        <el-input type="textarea" v-model.trim="temp.remark" placeholder="请输入备注" clearable></el-input>
       </el-form-item>
     </el-form>
 
@@ -60,19 +64,17 @@
 </template>
 
 <script>
-  import map from '@/components/Map/map' // 引入刚才的map.js 注意路径
-  import {itemsDetail,progressList} from '@/api/project'
+
+  import {addProject, departmentList, userList} from '@/api/project'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import Pagination from "@/components/Pagination/index"; // waves directive
-  import SingleImage from "@/components/Upload/SingleImage.vue"; // waves directive
   export default {
     name: 'parameterView',
     directives: { waves },
     components: {
       draggable,
       Pagination,
-      SingleImage
     },
     props: {
       showDialog: {
@@ -92,18 +94,26 @@
     },
     data() {
       return {
-        map: '', // 对象
-        zoom: 12, // 地图的初始化级别，及放大比例
-        centerLatitude:'30.20835',//中心纬度
-        centerLongitude:'120.21194',//中心经度
         paraLoading:false,
         temp: {
-          name:'',
-          parameterId:undefined,
-          deleted:0
+          items_name:'',
+          type:'',
+          offices:'',
+          leader:'',
+          start_time:'',
+          end_time:'',
+          target:'',
+          remark:''
         },
+        userOption:[],
+        officesOption:[],
         rules: {
-          name: [{ required: true, message: '请输入名称', trigger: 'change' }],
+          items_name: [{ required: true, message: '请输入名称', trigger: 'change' }],
+          type: [{ required: true, message: '请选择类别', trigger: 'change' }],
+          offices: [{ required: true, message: '请选择科室', trigger: 'change' }],
+          leader: [{ required: true, message: '请选择领导', trigger: 'change' }],
+          start_time: [{ required: true, message: '请选择时间', trigger: 'change' }],
+          target: [{ required: true, message: '请输入目标', trigger: 'change' }],
         },
       }
     },
@@ -116,94 +126,75 @@
           this.$emit("update:show-dialog", value);
         }
       },
-    },
-    filters:{
-      filtersStatus: function(value) {
-        let StatusArr = {0:'禁用', 1:'启用'}
-        return StatusArr[value]
-      }
+      dateTime: {
+        get() {
+          if (
+            this.temp.start_time &&
+            this.temp.end_time
+          ) {
+            return [
+              this.temp.start_time,
+              this.temp.end_time,
+            ];
+          } else {
+            return [];
+          }
+        },
+        set(v) {
+          if (v) {
+            this.temp.start_time = v[0];
+            this.temp.end_time = v[1];
+          } else {
+            this.temp.start_time = "";
+            this.temp.end_time = "";
+          }
+        },
+      },
     },
     methods: {
-      onLoad() {
-        let T = window.T;
-        let map = new T.Map('mapDiv');
-        map.centerAndZoom(new T.LngLat(this.centerLongitude, this.centerLatitude), this.zoom); // 设置显示地图的中心点和级别
-        // 普通标注
-        document.getElementsByClassName("tdt-control-copyright tdt-control")[0].style.display = 'none';
-        //创建标注工具对象
-        let markerTool = new T.MarkTool(map, {follow: true});
-
-        function endeditMarker() {
-          let markers = markerTool.getMarkers();
-          for (let i = 0; i < markers.length; i++) {
-            markers[i].disableDragging();
-          }
-        }
-        var cp = new T.CoordinatePickup(map, {callback: this.getLngLat})
-        cp.addEvent();
-        function editMarker() {
-          let markers = markerTool.getMarkers()
-          console.log(markers)
-          for (let i = 0; i < markers.length; i++) {
-            markers[i].enableDragging();
-          }
-
-        }
-        // endeditMarker();
-        editMarker();
-        markerTool.open();
-
+      getOffices(){
+        departmentList({typelist:'all'}).then(res => {
+          this.officesOption = res.data.data
+        });
       },
-      getLngLat(lnglat) {
-        this.temp.address  = lnglat.lng.toFixed(6) + "," + lnglat.lat.toFixed(6);
-        this.temp.log = lnglat.lng.toFixed(6)
-        this.temp.lat = lnglat.lat.toFixed(6)
-      },
-      hasImgSrc(val) {
-        this.temp.imgUrl = val;
+      getUser(){
+        userList().then(res => {
+          this.userOption = res.data.data
+        });
       },
       open(){
         this.$nextTick(function() {
-          this.onLoad();
+          this.getOffices();
+          this.getUser();
         })
       },
       close(){},
-      resetTemp() {
-        this.temp = {
-          // parameterId:undefined,
-          name:'',
-          parameterId:undefined,
-          deleted:0
-          // orders:'',
-          // isSystem:1,
-        }
-      },
-
-
 
       createData() {
-        this.$refs['dataForm'].validate((valid) => {
+        // firstForm
+        this.$refs['firstForm'].validate((valid) => {
           if (valid) {
-            this.paraLoading = true
-            this.temp.parameterId = this.paraData.id
-            paraValueSave(this.temp).then((res) => {
-              setTimeout(()=>{
-                this.paraLoading = false
-              },1000)
-              if(res.resp_code == 0) {
-                this.getList();
-                // this.list.unshift(res.data);
-               this.showViewDialog = false;
-                // debugger
-                this.getList();
-                this.$message({
-                  message: '增加成功',
-                  type: 'success'
+            this.$refs['dataForm'].validate((valid) => {
+              if (valid) {
+                this.paraLoading = true
+                addProject(this.temp).then((res) => {
+                  setTimeout(() => {
+                    this.paraLoading = false
+                  }, 1000)
+                  if (res.code == 0) {
+                    this.showViewDialog = false;
+                    // debugger
+                    this.$emit('updateList');
+                    this.$message({
+                      message: res.message,
+                      type: 'success'
+                    });
+                  }
+                }).catch(() => {
+                  this.paraLoading = false;
                 });
               }
-            }).catch(() => {
-              this.paraLoading = false;
-            });
+            })
           }
         })
       },

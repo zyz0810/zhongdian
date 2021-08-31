@@ -11,37 +11,29 @@
   >
     <p class="baseColor border_bt f16 form_title mb_10">问题信息</p>
     <el-form ref="dataForm" :inline="true" :model="temp" label-width="105px">
-      <el-form-item label="项目名称：" prop="name">打算一提</el-form-item>
-      <el-form-item label="任务类别：" prop="name">局重点项目</el-form-item>
-      <el-form-item label="责任科室：" prop="name">受理中心</el-form-item>
-      <el-form-item label="分管领导：" prop="name">郑思明</el-form-item>
+      <el-form-item label="项目名称：" prop="name">{{projectInfo.items_name}}</el-form-item>
+      <el-form-item label="任务类别：" prop="name">{{projectInfo.type_name}}</el-form-item>
+      <el-form-item label="责任科室：" prop="name">{{projectInfo.offices_name}}</el-form-item>
+      <el-form-item label="分管领导：" prop="name">{{projectInfo.leader_name}}</el-form-item>
     </el-form>
     <el-form ref="dataForm" :model="temp" label-width="105px">
-      <el-form-item label="项目期限：" prop="name">2021年1月-2021年12月</el-form-item>
-      <el-form-item label="计划进度：" prop="name">受理中心受理中心受理中心受理中心受理中心受理中心受理中心受理中心受理中心</el-form-item>
+      <el-form-item label="项目期限：" prop="name">{{projectInfo.end_time}}</el-form-item>
+      <el-form-item label="计划进度：" prop="name">{{projectInfo.progressLine}}</el-form-item>
     </el-form>
     <p class="baseColor border_bt f16 form_title mb_10">项目进度</p>
-    <el-table v-loading="listLoading" :data="list" :height="tableHeight" border :header-cell-style="{background:'rgb(244,244,252)',}"
+    <el-table v-loading="listLoading" :data="projectInfo.progressList" :height="tableHeight" border :header-cell-style="{background:'rgb(244,244,252)',}"
               element-loading-text="拼命加载中" fit ref="tableList" class="dialog_table">
-      <el-table-column label="月份" align="center" prop="num"></el-table-column>
-      <el-table-column label="计划完成情况" align="center" prop="com"></el-table-column>
-      <el-table-column label="相关资料" align="center" prop="data">
-        <template slot-scope="scope">
-          <el-link type="primary" href="#">{{scope.row.data}}</el-link>
-        </template>
-      </el-table-column>
+      <el-table-column label="月份" align="center" prop="month"></el-table-column>
+      <el-table-column label="计划完成情况" align="center" prop="status" :formatter="formatStatus"></el-table-column>
+      <el-table-column label="相关资料数量" align="center" prop="num"></el-table-column>
       <el-table-column label="评价结果" align="center" prop="result" width="150">
         <template slot-scope="scope">
-          <span v-if="scope.row.result == 1">完成情况良好<i class="el-icon-edit-outline f20 baseColor bold ml_10" @click="handleEvaluate(scope.row)"></i></span>
-          <span v-if="scope.row.result != 1"><el-button type="text" @click="handleEvaluate(scope.row)">请评价</el-button></span>
+          <span v-if="scope.row.status == 0">--</span>
+          <span v-if="scope.row.status != 0"><el-button type="text" @click="handleEvaluate(scope.row)">请评价</el-button></span>
         </template>
       </el-table-column>
 
     </el-table>
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="showViewDialog = false">取 消</el-button>
-      <el-button type="primary" @click="" :loading="paraLoading">保 存</el-button>
-    </div>
     <evaluateView :showDialog.sync="showEvaluateDialog" :paraData="evaluateData"></evaluateView>
   </myDialog>
 </template>
@@ -52,6 +44,7 @@
   import {paraValueList,paraValueSave,paraValueUpdate,paraValueDelete} from '@/api/parameter'
   import draggable from 'vuedraggable'
   import Pagination from "@/components/Pagination/index";
+  import {itemsDetail} from "@/api/project";
   export default {
     name: 'parameterView',
     components: {
@@ -77,47 +70,13 @@
     },
     data() {
       return {
+        tableHeight:260,
         showEvaluateDialog:false,
         evaluateData:{},
         listLoading:false,
-        list: [{
-          num:'一月',
-          com:'文一路300号',
-          data:1,
-          result:1
-        },{
-          num:'二月',
-          com:'文一路300号',
-          data:1,
-          result:1
-        },{
-          num:'三月',
-          com:'文一路300号',
-          data:1,
-          result:1
-        },{
-          num:'四月',
-          com:'文一路300号',
-          data:1,
-          result:1
-        },{
-          num:'五月',
-          com:'文一路300号',
-          data:1,
-          result:1
-        },{
-          num:'六月',
-          com:'文一路300号',
-          data:1,
-          result:2
-        }],
-        showAdoptDialog:false,
-        showAbandonedDialog:false,
-        map: '', // 对象
-        zoom: 12, // 地图的初始化级别，及放大比例
-        centerLatitude:'30.20835',//中心纬度
-        centerLongitude:'120.21194',//中心经度
+        list: [],
         paraLoading:false,
+        projectInfo:{},
         temp: {
           name:'',
           parameterId:undefined,
@@ -145,53 +104,38 @@
       }
     },
     methods: {
-      handleEvaluate(){
+      // 0、无  1、正常 2 超前 3延迟
+      formatStatus(row, column, cellValue, index) {
+        return cellValue == 0
+          ? "无"
+          : cellValue == 1
+            ? "正常"
+            : cellValue == 2
+              ? "超前"
+              : cellValue == 3
+                ? "延迟"
+              : "";
+      },
+      handleEvaluate(row){
+
         this.showEvaluateDialog = true
         this.evaluateData = {
-          // id:row.id
+          id:row.items_id,
+          progress_id:row.id,
         }
       },
-      onLoad() {
-        let T = window.T;
-        let map = new T.Map('mapDiv');
-        map.centerAndZoom(new T.LngLat(this.centerLongitude, this.centerLatitude), this.zoom); // 设置显示地图的中心点和级别
-        // 普通标注
-        document.getElementsByClassName("tdt-control-copyright tdt-control")[0].style.display = 'none';
-        //创建标注工具对象
-        let markerTool = new T.MarkTool(map, {follow: true});
-
-        function endeditMarker() {
-          let markers = markerTool.getMarkers();
-          for (let i = 0; i < markers.length; i++) {
-            markers[i].disableDragging();
-          }
-        }
-        var cp = new T.CoordinatePickup(map, {callback: this.getLngLat})
-        cp.addEvent();
-        function editMarker() {
-          let markers = markerTool.getMarkers()
-          console.log(markers)
-          for (let i = 0; i < markers.length; i++) {
-            markers[i].enableDragging();
-          }
-
-        }
-        // endeditMarker();
-        editMarker();
-        markerTool.open();
-
-      },
-      getLngLat(lnglat) {
-        this.temp.address  = lnglat.lng.toFixed(6) + "," + lnglat.lat.toFixed(6);
-        this.temp.log = lnglat.lng.toFixed(6)
-        this.temp.lat = lnglat.lat.toFixed(6)
+      getView(){
+        itemsDetail({id:this.paraData.id}).then(res => {
+          this.projectInfo = res.data
+          // this.total = res.data.total
+        });
       },
       hasImgSrc(val) {
         this.temp.imgUrl = val;
       },
       open(){
         this.$nextTick(function() {
-          this.onLoad();
+          this.getView();
         })
       },
       close(){},
