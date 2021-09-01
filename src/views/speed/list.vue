@@ -24,7 +24,7 @@
                      placeholder="请选择责任科室">
             <el-option v-for="item in officesOption"
                        :key="item.id"
-                       :label="item.name"
+                       :label="item.department_name"
                        :value="item.id"></el-option>
           </el-select>
         </el-form-item>
@@ -171,7 +171,7 @@
       },
       getOffices(){
         departmentList({typelist:'all'}).then(res => {
-          this.officesOption = res.data.data
+          this.officesOption = res.data
         });
       },
       resetList() {

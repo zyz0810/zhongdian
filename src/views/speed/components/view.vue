@@ -29,12 +29,10 @@
                 action
                 :multiple="false"
                 name="files"
-                accept=".pdf,.PDF"
                 :on-preview="handlePreview"
                 :on-remove="handleRemove"
                 :file-list="fileList"
                 v-loading="loading"
-                :limit="1"
                 :http-request="uploadFile"
         >
           <!--:disabled="protocolRebate.protocolFileUrl != ''"  protocolFileName -->
@@ -116,7 +114,9 @@
         projectInfo:{},
         rules: {
           id: [{ required: true, message: '请选择项目', trigger: 'change' }],
+          url: [{ required: true, message: '请选择文件', trigger: 'change' }],
           status: [{ required: true, message: '请选择完成情况', trigger: 'change' }],
+          progress_info: [{ required: true, message: '请输入说明', trigger: 'change' }],
         },
       }
     },
@@ -134,33 +134,28 @@
       // 图片上传
       uploadFile(e) {
         const file = e.file;
-        if (file.type != "application/pdf") {
-          this.$message({ message: "附件仅支持PDF格式", type: "warning" });
-          this.fileList = [];
-          return;
-        }
-        if (!(file.size / 1024 / 1024 / 2 <= 1)) {
-          this.$message({
-            message: "上传文件大小不能超过 2MB!",
-            type: "warning",
-          });
-          this.fileList = [];
-          return;
-        }
+        // if (file.type != "application/pdf") {
+        //   this.$message({ message: "附件仅支持PDF格式", type: "warning" });
+        //   this.fileList = [];
+        //   return;
+        // }
+        // if (!(file.size / 1024 / 1024 / 2 <= 1)) {
+        //   this.$message({
+        //     message: "上传文件大小不能超过 2MB!",
+        //     type: "warning",
+        //   });
+        //   this.fileList = [];
+        //   return;
+        // }
         this.loading = true;
         uploadImg(file)
                 .then((res) => {
-                  // this.protocolRebate.protocolFileUrl = res.picUrl;
-                  // this.protocolRebate.protocolFileName = file.name;
-                  this.fileList = [{ url: res.picUrl, name: file.name }];
-                  this.loading = false;
-                  this.$message({ message: "上传成功", type: "success" });
-                  // 上传文件失去焦点
-                  this.$refs.firstForm.validate((valid) => {
-                    if (valid) {
-                      // this.current = 1;
-                    }
-                  });
+                    // this.fileList = [{ url: res.images, name: file.name }];
+                  this.fileList.push({ url: res.images, name: file.name });
+                  console.log(this.fileList)
+                  this.temp.url = this.fileList.map(item=>{ return item.url}).join(',')
+                    this.loading = false;
+                    this.$message({ message:res.message, type: "success" });
                 })
                 .catch((e) => {
                   this.loading = false;
@@ -172,11 +167,10 @@
       },
       // 文件删除
       handleRemove(file, fileList) {
-        // console.log(file, fileList);
-        this.temp.url = "";
-      },
-      hasImgSrc(val) {
-        this.temp.imgUrl = val;
+        console.log(file, fileList);
+        this.fileList = fileList
+        this.temp.url = this.fileList.map(item=>{ return item.url}).join(',')
+        // this.temp.url = "";
       },
       getProjectTime(){
         progressList({}).then(res => {
@@ -194,6 +188,7 @@
         this.$nextTick(function() {
           this.getView();
           this.getProjectTime();
+          this.$refs.dataForm.clearValidate();
         })
       },
       close(){
@@ -208,12 +203,13 @@
           url:''
         };
         this.projectInfo={};
+        this.$refs.dataForm.clearValidate();
       },
       onsubmit() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.paraLoading = true
-            this.temp.parameterId = this.paraData.id
+            this.temp.url = this.fileList.map(item=>{ return item.url}).join(',')
             editProgress(this.temp).then((res) => {
               setTimeout(()=>{
                 this.paraLoading = false

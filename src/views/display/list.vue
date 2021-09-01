@@ -14,7 +14,7 @@
         </div>
       </div>
       <el-table v-loading="listLoading" :data="list" :height="tableHeight" border :header-cell-style="{background:'rgb(244,244,252)',}"
-                element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
+                element-loading-text="拼命加载中" fit ref="tableList">
         <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
         <el-table-column label="重点工作项目" align="center" prop="items_name"></el-table-column>
         <el-table-column label="任务类别" align="center" prop="type_name"></el-table-column>
@@ -41,65 +41,34 @@
           </template>
         </el-table-column>
       </el-table>
-      <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
+      <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize"
                   @pagination="getList" class="text-right"/>
     </div>
-
-    <paraView :showDialog.sync="showViewDialog" :paraData="paraData"></paraView>
-
   </div>
 </template>
 
 <script>
   import {itemProgressList} from '@/api/project'
-  import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
   import Pagination from "@/components/Pagination/index"; // waves directive
-  import paraView from "./components/view";
   export default {
-    name: 'parameterList',
+    name: 'displayList',
     directives: {waves},
     components: {
-      draggable,
       Pagination,
-      paraView
     },
     data() {
       return {
-        showViewDialog:false,
-        paraData:{
-          id:''
-        },
-        updateBtn: true,
-        enableBtn: true,
-        disableBtn: true,
-        total: 16,
-        parameterValueList: [{name: ''}],
+        total: 0,
         list: [],
         listLoading: false,
         listQuery: {
-          name: '',
-          status: undefined,
           page: 1,
-          limit: 10
+          pageSize: 10
         },
         tableHeight:'100'
       }
-    },
-    filters: {
-      filtersStatus: function (value) {
-        let StatusArr = {0: '未审核', 1: '已审核'}
-        return StatusArr[value]
-      },
-      filtersType: function (value) {
-        let StatusArr = {0: '店外经营', 1: '违规撑伞', 2: '流动摊点', 3: '沿街晾晒'}
-        return StatusArr[value]
-      },
-      filtersSource: function (value) {
-        let StatusArr = {0: '其它', 1: '滨康二区',}
-        return StatusArr[value]
-      },
     },
     computed: {
       ...mapState({
@@ -129,7 +98,6 @@
       this.getList();
     },
     methods: {
-
       handleFilter() {
         this.listQuery.page = 1;
         this.getList()
@@ -140,65 +108,6 @@
           this.total = res.data.total
         });
       },
-
-      resetList() {
-        this.listQuery = {
-          name: '',
-          status: undefined,
-          page: 1,
-          limit: 10
-        }
-        this.getList();
-      },
-      clickRow(row){
-        this.$refs.tableList.toggleRowSelection(row)
-      },
-      handleSelectionChange(val) {
-        console.log(val)
-        this.rowInfo = val;
-        if (val.length == 1) {
-          this.updateBtn = false
-          this.deleteBtn = false
-          if(val[0].status == 0){
-            this.enableBtn = false
-            this.disableBtn = true
-          }else{
-            this.enableBtn = true
-            this.disableBtn = false
-          }
-        } else {
-          this.updateBtn = true
-          this.deleteBtn = true
-          this.enableBtn = true
-          this.disableBtn = true
-        }
-      },
-
-      handleView(row){
-        this.showViewDialog = true
-        this.paraData = {
-          // id:row.id
-        }
-      },
-
-
     }
   }
 </script>
-<style lang="scss" scoped>
-  .monitor_num{
-    line-height: 2.5;
-  }
-  .red_circle{
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: red;
-  }
-  .yellow_circle{
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: yellow;
-  }
-</style>

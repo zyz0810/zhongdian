@@ -24,7 +24,7 @@
                      placeholder="请选择责任科室">
             <el-option v-for="item in officesOption"
                        :key="item.id"
-                       :label="item.name"
+                       :label="item.department_name"
                        :value="item.id"></el-option>
           </el-select>
         </el-form-item>
@@ -33,12 +33,12 @@
                      class="filter-item"
                      type="primary"
                      icon="el-icon-search"
-                     @click="">查询</el-button>
+                     @click="handleFilter">查询</el-button>
         </el-form-item>
       </el-form>
       <div class="mb_10">
 <!--        <el-checkbox-group v-model="checkList" class="fl" style="line-height: 32px;">-->
-        <el-radio-group v-model="listQuery.status" class="fl" style="line-height: 32px;">
+        <el-radio-group v-model="listQuery.status" class="fl" style="line-height: 32px;" @change="handleFilter">
           <el-radio :label="2">进度提前提交</el-radio>
           <el-radio :label="1">进度正常提交</el-radio>
           <el-radio :label="3">进度延迟提交</el-radio>
@@ -51,12 +51,12 @@
 <!--            <el-input v-model="listQuery.productSn" placeholder="" @change="handleFilter" clearable/>-->
 <!--          </el-form-item>-->
           <el-form-item>
-            <el-button class="btn_blue02" type="primary" @click="handleFilter">导出</el-button>
+            <el-button class="btn_blue02" type="primary" @click="">导出</el-button>
           </el-form-item>
         </el-form>
       </div>
       <el-table v-loading="listLoading" :data="list" :height="tableHeight" border :header-cell-style="{background:'rgb(244,244,252)',}"
-                element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
+                element-loading-text="拼命加载中" fit ref="tableList">
         <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
         <el-table-column label="重点工作项目" align="center" prop="items_name"></el-table-column>
         <el-table-column label="责任科室" align="center" prop="offices_name"></el-table-column>
@@ -153,7 +153,7 @@
       },
       getOffices(){
         departmentList({typelist:'all'}).then(res => {
-          this.officesOption = res.data.data
+          this.officesOption = res.data
         });
       },
       handleFilter() {
