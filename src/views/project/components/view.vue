@@ -14,18 +14,24 @@
         <el-input v-model.trim="temp.items_name" placeholder="请输入项目名称" autocomplete="off" clearable/>
       </el-form-item>
       <el-form-item label="任务类别" prop="type">
-        <el-select v-model="temp.type">
-          <el-option label="启用" value="1"></el-option>
-          <el-option label="禁用" value="0"></el-option>
-        </el-select>
+        <el-input v-model.trim="temp.type" placeholder="请输入任务类别" autocomplete="off" clearable/>
       </el-form-item>
       <el-form-item label="责任科室" prop="offices">
-        <el-select v-model="temp.offices">
-          <el-option v-for="item in officesOption"
-                     :key="item.id"
-                     :label="item.name"
-                     :value="item.id"></el-option>
-        </el-select>
+<!--        <el-select v-model="temp.offices">-->
+<!--          <el-option v-for="item in officesOption"-->
+<!--                     :key="item.id"-->
+<!--                     :label="item.name"-->
+<!--                     :value="item.id"></el-option>-->
+<!--        </el-select>-->
+
+        <el-cascader ref="cascaderPublish"
+                     v-model="temp.offices"
+                     :options="officesOption"
+                     :show-all-levels="false"
+                     value-format="yyyy-MM-dd HH:mm:ss"
+                     filterable
+                     :props="props"
+                     placeholder="请选择"></el-cascader>
       </el-form-item>
       <el-form-item label="分管领导" prop="leader">
         <el-select v-model="temp.leader">
@@ -36,11 +42,12 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-form ref="dataForm" :rules="rules" :model="temp" label-width="120px" class="mb_20">
+    <el-form ref="dataForm" :rules="rules" :model="temp" label-width="120px" class="mb_20 mr_30">
       <el-form-item label="项目期限" prop="start_time">
         <el-date-picker
           v-model="dateTime"
           type="daterange"
+          value-format="yyyy-MM-dd HH:mm:ss"
           range-separator="至"
           start-placeholder="开始日期"
           end-placeholder="结束日期">
@@ -94,6 +101,13 @@
     },
     data() {
       return {
+        props: {
+          expandTrigger: "hover",
+          value: "id",
+          label: "department_name",
+          children: "child",
+          disabled: false,
+        },
         paraLoading:false,
         temp: {
           items_name:'',
@@ -152,10 +166,30 @@
       },
     },
     methods: {
+      categoryChange(val){
+        this.temp.offices = val[0];
+      },
       getOffices(){
-        departmentList({typelist:'all'}).then(res => {
-          this.officesOption = res.data.data
+        departmentList().then(res => {
+          this.officesOption = this.getTreeData(res.data);
         });
+      },
+      getTreeData (data) {
+        if (data != "" || data != null) {
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].child.length < 1) {
+              // children若为空数组，则将children设为undefined
+              // if (data[i].grade == 3) {
+              //   data[i].childrens = undefined;
+              // }
+              data[i].child = undefined;
+            } else {
+              // children若不为空数组，则继续 递归调用 本方法
+              this.getTreeData(data[i].child);
+            }
+          }
+          return data;
+        }
       },
       getUser(){
         userList().then(res => {
@@ -177,11 +211,13 @@
             this.$refs['dataForm'].validate((valid) => {
               if (valid) {
                 this.paraLoading = true
-                addProject(this.temp).then((res) => {
+                let temp = JSON.parse(JSON.stringify(this.temp));
+                temp.offices = temp.offices[0];
+                addProject(temp).then((res) => {
                   setTimeout(() => {
                     this.paraLoading = false
                   }, 1000)
-                  if (res.code == 0) {
+                  if (res.code ==1) {
                     this.showViewDialog = false;
                     // debugger
                     this.$emit('updateList');

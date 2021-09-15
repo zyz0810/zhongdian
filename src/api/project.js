@@ -26,7 +26,8 @@ export function addProject(data) {
  */
 export function departmentList(data) {
   return request({
-    url:'/admin/department/allList',
+    // url:'/admin/department/allList',
+    url:'/admin/Department/departTree',
     method: 'post',
     data: Qs.stringify(data)
   })
