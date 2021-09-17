@@ -173,7 +173,7 @@
         // this.temp.url = "";
       },
       getProjectTime(){
-        progressList({}).then(res => {
+        progressList({items_id:this.paraData.id}).then(res => {
           this.projectTimeOption = res.data
           // this.total = res.data.total
         });
