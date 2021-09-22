@@ -53,7 +53,7 @@ const actions = {
       login({ mobile: mobile.trim(), password: password }).then(response => {
         const { data } = response;
         // token_type  access_token
-        commit('SET_TOKEN', data.access_token);
+        commit('SET_TOKEN', data.token);
         // commit('SET_ID', response.data.id);
         // console.log(response.data.city_list);
         // commit('SET_CITY', response.data.city_list);
@@ -63,8 +63,8 @@ const actions = {
         // setCitySelected(response.data.city_list[0].id);
         // setId(response.data.id);
         // setName(response.data.name);
-        setToken(data.access_token);
-        sessionStorage.setItem("Admin-Token", JSON.stringify(data.access_token));
+        setToken(data.token);
+        sessionStorage.setItem("Admin-Token", JSON.stringify(data.token));
         resolve()
       }).catch(error => {
         reject(error)
@@ -137,10 +137,10 @@ const actions = {
         commit('SET_ROLES', []);
         commit('SET_NAME', '');
         commit('SET_MOBILE', '');
-        commit('SET_CITY', []);
-        commit('SET_CITYSELECTED', '');
-        removeCitySelected();
-        removeCity();
+        // commit('SET_CITY', []);
+        // commit('SET_CITYSELECTED', '');
+        // removeCitySelected();
+        // removeCity();
         removeToken();
         sessionStorage.setItem("Admin-Token", '');
         resetRouter();
@@ -157,10 +157,10 @@ const actions = {
         commit('SET_ROLES', []);
         commit('SET_NAME', '');
         commit('SET_MOBILE', '');
-        commit('SET_CITY', []);
+        // commit('SET_CITY', []);
         removeToken();
-        removeCitySelected();
-        removeCity();
+        // removeCitySelected();
+        // removeCity();
         sessionStorage.setItem("Admin-Token", '');
         resetRouter();
         // removeId();
@@ -178,9 +178,9 @@ const actions = {
       commit('SET_ROLES', []);
       // commit('SET_ID', '');
       commit('SET_NAME', '');
-      commit('SET_CITY', []);
+      // commit('SET_CITY', []);
       removeToken();
-      removeCity();
+      // removeCity();
       removeCitySelected();
       sessionStorage.setItem("Admin-Token", '');
       // removeId();
