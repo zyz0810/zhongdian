@@ -16,9 +16,9 @@
       <el-table v-loading="listLoading" :data="list" :height="tableHeight" border :header-cell-style="{background:'rgb(244,244,252)',}"
                 element-loading-text="拼命加载中" fit ref="tableList">
         <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
-        <el-table-column label="重点工作项目" align="center" prop="items_name"></el-table-column>
-        <el-table-column label="任务类别" align="center" prop="type_name"></el-table-column>
-        <el-table-column label="完成目标" align="center" prop="target"></el-table-column>
+        <el-table-column label="重点工作项目" align="center" prop="items_name" show-overflow-tooltip></el-table-column>
+        <el-table-column label="任务类别" align="center" prop="type_name" show-overflow-tooltip></el-table-column>
+        <el-table-column label="完成目标" align="center" prop="target" show-overflow-tooltip></el-table-column>
         <el-table-column label="完成时间" align="center" prop="end_time"></el-table-column>
         <el-table-column label="责任科室" align="center" prop="offices_name"></el-table-column>
         <el-table-column label="分管领导" align="center" prop="leader_name"></el-table-column>

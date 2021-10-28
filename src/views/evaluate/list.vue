@@ -58,9 +58,9 @@
       <el-table v-loading="listLoading" :data="list" :height="tableHeight" border :header-cell-style="{background:'rgb(244,244,252)',}"
                 element-loading-text="拼命加载中" fit ref="tableList">
         <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
-        <el-table-column label="重点工作项目" align="center" prop="items_name"></el-table-column>
-        <el-table-column label="责任科室" align="center" prop="offices_name"></el-table-column>
-        <el-table-column label="计划进度" align="center" prop="progressLine"></el-table-column>
+        <el-table-column label="重点工作项目" align="center" prop="items_name" show-overflow-tooltip></el-table-column>
+        <el-table-column label="责任科室" align="center" prop="offices_name" show-overflow-tooltip></el-table-column>
+        <el-table-column label="计划进度" align="center" prop="progressLine" show-overflow-tooltip></el-table-column>
 <!--        <el-table-column label="6月进度更新" align="center" prop="name"></el-table-column>-->
 <!--        <el-table-column label="考核评价状态" align="center" prop="name"></el-table-column>-->
         <el-table-column label="操作" align="center" prop="name" width="100">
