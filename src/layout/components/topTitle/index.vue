@@ -257,8 +257,11 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-      this.$router.push(`/login?redirect=/system/organization/manage`)
+      // this.$router.push(`/jsc/index.html#/login?redirect=/dashboard`)
+      // window.location.protocol+"//"+window.location.host
+      location.href = window.location.protocol+"//"+window.location.host + '/jsc/index.html#/login?redirect=/dashboard';
     },
+
     // addDate() {
     //   let nowDate = new Date();
     //   this.nowDate = new Date();
