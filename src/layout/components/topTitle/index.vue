@@ -62,8 +62,8 @@
             <!--<img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">-->
             <img :src="headImg" class="user-avatar" />
             <p>
-              <span class="block f14" style="margin: 0 5px 5px;">登录名</span>
-              <span class="block f12" style="margin: 5px 5px 0;color: #5fb5ec;">{{name}}</span>
+<!--              <span class="block f14" style="margin: 0 5px 5px;">登录名</span>-->
+              <span class="block f14" style="margin: 0 5px 0;">{{name}}</span>
             </p>
           </div>
 <!--          <a class="ml_20 clr_white" href="/jsc/index.html#/dashboard"><i class="el-icon-s-promotion bold f20" style="margin-left: 5px"></i> 回首页</a>-->
