@@ -167,7 +167,7 @@
     },
     methods: {
       categoryChange(val){
-        this.temp.offices = val[0];
+        this.temp.offices = val[1];
       },
       getOffices(){
         departmentList().then(res => {
@@ -202,7 +202,21 @@
           this.getUser();
         })
       },
-      close(){},
+      close(){
+        this.paraLoading=false;
+        this.temp= {
+          items_name:'',
+          type:'',
+          offices:'',
+          leader:'',
+          start_time:'',
+          end_time:'',
+          target:'',
+          remark:''
+        };
+        this.userOption=[];
+        this.officesOption=[];
+      },
 
       createData() {
         // firstForm
@@ -212,7 +226,9 @@
               if (valid) {
                 this.paraLoading = true
                 let temp = JSON.parse(JSON.stringify(this.temp));
-                temp.offices = temp.offices[0];
+                if(temp.offices != '' && temp.offices.length > 0){
+                  temp.offices = temp.offices[temp.offices.length - 1];
+                }
                 addProject(temp).then((res) => {
                   setTimeout(() => {
                     this.paraLoading = false
