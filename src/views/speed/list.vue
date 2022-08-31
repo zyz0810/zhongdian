@@ -49,7 +49,7 @@
 <!--            <el-input v-model="listQuery.productSn" placeholder="" @change="handleFilter" clearable/>-->
 <!--          </el-form-item>-->
           <el-form-item>
-            <el-button class="btn_blue02" type="primary" @click="handleFilter">导出</el-button>
+            <el-button class="btn_blue02" type="primary" @click="handleExport">导出</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -82,7 +82,7 @@
     </div>
 
     <paraView :showDialog.sync="showViewDialog" :paraData="paraData" @updateList="getList"></paraView>
-
+    <a v-show="false" :href="downLoadUrl" id="fileDownload"></a>
   </div>
 </template>
 
@@ -125,7 +125,8 @@
           page: 1,
           pageSize: 10
         },
-        tableHeight:'100'
+        tableHeight:'100',
+        downLoadUrl:'',
       }
     },
     computed: {
@@ -158,6 +159,15 @@
       this.getList();
     },
     methods: {
+      // 导出
+      getUrl(){
+        this.downLoadUrl= this.global.domainName + 'admin/Export/itemProgressList?page='+this.listQuery.page + '&pageSize='+this.listQuery.pageSize+ '&items_name='+this.listQuery.items_name
+          + '&offices='+this.listQuery.offices+ '&status='+this.listQuery.status;
+      },
+      async handleExport(){
+        await this.getUrl();
+        document.getElementById("fileDownload").click();
+      },
       handleFilter() {
         this.listQuery.page = 1;
         this.getList()
