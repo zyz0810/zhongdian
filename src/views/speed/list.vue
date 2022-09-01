@@ -161,7 +161,7 @@
     methods: {
       // 导出
       getUrl(){
-        this.downLoadUrl= this.global.domainName + 'admin/Export/itemProgressList?page='+this.listQuery.page + '&pageSize='+this.listQuery.pageSize+ '&items_name='+this.listQuery.items_name
+        this.downLoadUrl= this.global.domainName + 'admin/Export/manageJobList?page='+this.listQuery.page + '&pageSize='+this.listQuery.pageSize+ '&items_name='+this.listQuery.items_name
           + '&offices='+this.listQuery.offices+ '&status='+this.listQuery.status;
       },
       async handleExport(){
